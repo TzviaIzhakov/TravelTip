@@ -44,6 +44,19 @@ function getPosition() {
   });
 }
 
+function onMoveToLoc(ev) {
+  const loc = ev.target.value.replace(/ /g, '+');
+  axios
+    .get(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${loc}&key=AIzaSyCcepevgXQ0DFmsXrdyecMV11LMtvFSoWs`
+    )
+    .then((res) => res.data.results[0].geometry.location)
+    .then(({ lat, lng }) => {
+      mapService.panTo(lat, lng);
+      storageService.post(LOC_KEY, { lat, lng, adress: ev.target.value });
+    });
+}
+
 function onAddMarker() {
   console.log('Adding a marker');
   mapService.addMarker({ lat: 32.0749831, lng: 34.9120554 });
