@@ -24,6 +24,7 @@ function onInit() {
         const lat = ev.latLng.lat();
         const lng = ev.latLng.lng();
         mapService.panTo(lat, lng);
+        onAddMarker(lat, lng);
         axios
           .get(
             `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCcepevgXQ0DFmsXrdyecMV11LMtvFSoWs`
@@ -58,15 +59,14 @@ function onMoveToLoc(ev) {
     });
 }
 
-function onAddMarker() {
+function onAddMarker(lat = 32.0749831, lng = 34.9120554) {
   console.log('Adding a marker');
-  mapService.addMarker({ lat: 32.0749831, lng: 34.9120554 });
+  mapService.addMarker({ lat, lng });
 }
 
 function onGetLocs() {
   locService.getLocs().then((locs) => {
     console.log('Locations:', locs);
-    // document.querySelector('.locs').innerText = JSON.stringify(locs, null, 2);
     return renderLocations(locs);
   });
 }
@@ -91,9 +91,7 @@ function onPanTo(lat = 35.6895, lng = 139.6917) {
 
 function saveLoc(lat, lng, adress) {
   locService.getLocs().then((locs) => {
-    locService.addLoc(lat, lng, adress);
-    console.log(locs, '!!');
-    return locs;
+    locService.addLoc(lat, lng, adress).then((locs) => renderLocations(locs));
   });
 }
 
@@ -129,4 +127,5 @@ function onDeleteLocation(id) {
 
 function onPanToLocation(lat, lng) {
   mapService.panTo(lat, lng);
+  onAddMarker(lat, lng);
 }

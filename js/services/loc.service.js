@@ -15,10 +15,12 @@ function deleteLocation(id) {
 }
 
 function addLoc(lat, lng, adress) {
-  getLocs().then((locs) => {
-    storageService.post(LOC_KEY, { lat, lng, adress });
-    return locs;
-  });
+  return getLocs()
+    .then((locs) => {
+      storageService.post(LOC_KEY, { lat, lng, adress });
+      return locs;
+    })
+    .then((locs) => getLocs());
 }
 
 function getLocs() {
