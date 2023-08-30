@@ -24,10 +24,6 @@ function onInit() {
             mapService.getMap().addListener('click', (ev) => {
                 const lat = ev.latLng.lat();
                 const lng = ev.latLng.lng();
-                const queryParams = `?lat=${lat}&lng=${lng}`
-                const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + queryParams
-                
-                window.history.pushState({ path: newUrl }, '', newUrl)
                 mapService.panTo(lat, lng);
                 axios
                     .get(
@@ -36,7 +32,6 @@ function onInit() {
                     .then((res) => res.data.results[0].formatted_address)
                     .then((adress) => {
                         saveLoc(lat, lng, adress);
-                        storageService.post(LOC_KEY, { lat, lng, adress });
                     });
             });
         })
@@ -122,26 +117,25 @@ function renderLocations(locs) {
     `;
     })
     .join('');
-  console.log(strHtml);
+//   console.log(strHtml);
   const elTbody = document.querySelector('.locations');
   elTbody.innerHTML = strHtml;
 }
 
-function onMoveToLoc(ev) {
-    const loc = ev.target.value.replace(/ /g, '+')
- 
-    axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${loc}&key=AIzaSyCcepevgXQ0DFmsXrdyecMV11LMtvFSoWs`)
-    .then(res => res.data.results[0].geometry.location)
-    .then(({lat,lng})=> {
-        mapService.panTo(lat,lng)
-        storageService.post(LOC_KEY, { lat, lng, adress: ev.target.value });
-    })
+
 
 function onDeleteLocation(id) {
-  locService.deleteLocation(id);
-  locService.getLocs().then((locs) => {
-    console.log(locs, 'locs in delete');
-    return renderLocations(locs);
-  });
+  locService.deleteLocation(id).then(res=>{
+    console.log('res',res);
+    renderLocations(res)})
+  
 }
-}
+
+function onPanToLocation(lat, lng) {
+    mapService.panTo(lat, lng);
+  }
+  
+  
+  
+  
+  
