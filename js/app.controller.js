@@ -7,6 +7,8 @@ window.onAddMarker = onAddMarker;
 window.onPanTo = onPanTo;
 window.onGetLocs = onGetLocs;
 window.onGetUserPos = onGetUserPos;
+window.onPanToLocation = onPanToLocation;
+window.onDeleteLocation = onDeleteLocation;
 window.saveLoc = saveLoc;
 
 const LOC_KEY = 'locDB';
@@ -16,7 +18,6 @@ function onInit() {
     .initMap()
     .then(() => {
       console.log('Map is ready');
-      console.log(mapService.getMap());
       mapService.getMap().addListener('click', (ev) => {
         const lat = ev.latLng.lat();
         const lng = ev.latLng.lng();
@@ -28,7 +29,6 @@ function onInit() {
           .then((res) => res.data.results[0].formatted_address)
           .then((adress) => {
             saveLoc(lat, lng, adress);
-            storageService.post(LOC_KEY, { lat, lng, adress });
           });
       });
     })
@@ -74,35 +74,45 @@ function onPanTo() {
   mapService.panTo(35.6895, 139.6917);
 }
 
-function saveLoc(lat, lng, name) {
-  locService
-    .getLocs()
-    .then((locs) => {
-      locs.push(locService.createLoc(lat, lng, name));
-      return locs;
-    })
-    .then((locs) => {
-      return renderLocations(locs);
-    });
+function saveLoc(lat, lng, adress) {
+  locService.getLocs().then((locs) => {
+    locService.addLoc(lat, lng, adress);
+    console.log(locs, '!!');
+    return locs;
+  });
 }
 
 function renderLocations(locs) {
-  console.log(locs);
   const strHtml = locs
-    .map((loc) => {
+    .map((loc, i) => {
       let { adress, lat, lng } = loc;
       return `
     <tr>
     <td>${adress}</td>
     <td>${lat}</td>
     <td>${lng}</td>
+    <td>
+    <button onclick="onPanToLocation(${lat},${lng})">Go</button> 
+    <button onclick="onDeleteLocation('${loc.id}')">Delete</button>
+    </td>
+   
     </tr>
     `;
     })
     .join('');
   console.log(strHtml);
   const elTbody = document.querySelector('.locations');
-  console.log(elTbody);
-  console.log(document.querySelector('table'));
   elTbody.innerHTML = strHtml;
+}
+
+function onPanToLocation(lat, lng) {
+  mapService.panTo(lat, lng);
+}
+
+function onDeleteLocation(id) {
+  locService.deleteLocation(id);
+  locService.getLocs().then((locs) => {
+    console.log(locs, 'locs in delete');
+    return renderLocations(locs);
+  });
 }
