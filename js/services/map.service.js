@@ -17,6 +17,13 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
       zoom: 15,
     });
     console.log('Map!', gMap);
+    const queryParams = new URLSearchParams(window.location.search)
+    const loc={
+        lat: queryParams.get('lat') || '',
+        lng: queryParams.get('lng') || ''
+    }
+    panTo(loc.lat,loc.lng )
+    console.log(loc,'loc')
   });
 }
 

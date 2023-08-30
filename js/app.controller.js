@@ -15,25 +15,33 @@ window.onMoveToLoc = onMoveToLoc;
 const LOC_KEY = 'locDB';
 
 function onInit() {
-  mapService
-    .initMap()
-    .then(() => {
-      console.log('Map is ready');
-      mapService.getMap().addListener('click', (ev) => {
-        const lat = ev.latLng.lat();
-        const lng = ev.latLng.lng();
-        mapService.panTo(lat, lng);
-        axios
-          .get(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCcepevgXQ0DFmsXrdyecMV11LMtvFSoWs`
-          )
-          .then((res) => res.data.results[0].formatted_address)
-          .then((adress) => {
-            saveLoc(lat, lng, adress);
-          });
-      });
-    })
-    .catch(() => console.log('Error: cannot init map'));
+
+    mapService
+        .initMap()
+        .then(() => {
+            console.log('Map is ready');
+            console.log(mapService.getMap());
+            mapService.getMap().addListener('click', (ev) => {
+                const lat = ev.latLng.lat();
+                const lng = ev.latLng.lng();
+                const queryParams = `?lat=${lat}&lng=${lng}`
+                const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + queryParams
+                
+                window.history.pushState({ path: newUrl }, '', newUrl)
+                mapService.panTo(lat, lng);
+                axios
+                    .get(
+                        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCcepevgXQ0DFmsXrdyecMV11LMtvFSoWs`
+                    )
+                    .then((res) => res.data.results[0].formatted_address)
+                    .then((adress) => {
+                        saveLoc(lat, lng, adress);
+                        storageService.post(LOC_KEY, { lat, lng, adress });
+                    });
+            });
+        })
+        .catch(() => console.log('Error: cannot init map'));
+        
 }
 
 // This function provides a Promise API to the callback-based-api of getCurrentPosition
@@ -83,9 +91,9 @@ function onGetUserPos() {
       console.log('err!!!', err);
     });
 }
-function onPanTo() {
-  console.log('Panning the Map');
-  mapService.panTo(35.6895, 139.6917);
+function onPanTo(lat=35.6895 ,lng=139.6917) {
+    console.log('Panning the Map');
+    mapService.panTo(lat,lng );
 }
 
 function saveLoc(lat, lng, adress) {
@@ -119,9 +127,15 @@ function renderLocations(locs) {
   elTbody.innerHTML = strHtml;
 }
 
-function onPanToLocation(lat, lng) {
-  mapService.panTo(lat, lng);
-}
+function onMoveToLoc(ev) {
+    const loc = ev.target.value.replace(/ /g, '+')
+ 
+    axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${loc}&key=AIzaSyCcepevgXQ0DFmsXrdyecMV11LMtvFSoWs`)
+    .then(res => res.data.results[0].geometry.location)
+    .then(({lat,lng})=> {
+        mapService.panTo(lat,lng)
+        storageService.post(LOC_KEY, { lat, lng, adress: ev.target.value });
+    })
 
 function onDeleteLocation(id) {
   locService.deleteLocation(id);
@@ -129,4 +143,5 @@ function onDeleteLocation(id) {
     console.log(locs, 'locs in delete');
     return renderLocations(locs);
   });
+}
 }
