@@ -21,7 +21,6 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
       const lng = ev.latLng.lng();
       // saveCoords({ lat, lng })
       panTo(lat, lng);
-      console.log(lat, lng);
       axios
         .get(
           `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCcepevgXQ0DFmsXrdyecMV11LMtvFSoWs`
