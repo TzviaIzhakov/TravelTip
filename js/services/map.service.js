@@ -1,3 +1,5 @@
+import { storageService } from './async-storage.service.js'
+
 export const mapService = {
   initMap,
   addMarker,
@@ -6,6 +8,8 @@ export const mapService = {
 
 // Var that is used throughout this Module (not global)
 var gMap;
+const LOC_KEY='locDB'
+
 
 function initMap(lat = 32.0749831, lng = 34.9120554) {
   console.log('InitMap');
@@ -26,9 +30,12 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
           `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCcepevgXQ0DFmsXrdyecMV11LMtvFSoWs`
         )
         .then((res) => res.data.results[0].formatted_address)
-        .then((adress) => saveLoc(lat, lng, adress));
-    });
-  });
+        .then((adress) => {
+            saveLoc(lat, lng, adress)
+            storageService.post(LOC_KEY,{lat, lng, adress})
+        })
+    })
+  })
 }
 
 function addMarker(loc) {
