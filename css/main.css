@@ -1,3 +1,13 @@
 body {
-  background-color: black;
+  background-color: azure;
+}
+table {
+  border: 1px solid gray;
+  width: 200px;
+  height: 200px;
+}
+tbody {
+  border: 1px solid gray;
+  width: 200px;
+  height: 200px;
 }
