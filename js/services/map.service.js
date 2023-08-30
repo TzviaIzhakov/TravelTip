@@ -16,6 +16,19 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
       zoom: 15,
     });
     console.log('Map!', gMap);
+    gMap.addListener('click', (ev) => {
+      const lat = ev.latLng.lat();
+      const lng = ev.latLng.lng();
+      // saveCoords({ lat, lng })
+      panTo(lat, lng);
+      console.log(lat, lng);
+      axios
+        .get(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCcepevgXQ0DFmsXrdyecMV11LMtvFSoWs`
+        )
+        .then((res) => res.data.results[0].formatted_address)
+        .then((adress) => saveLoc(lat, lng, adress));
+    });
   });
 }
 

@@ -1,5 +1,6 @@
 export const locService = {
-    getLocs
+    getLocs,
+    createLoc
 }
 
 
@@ -17,3 +18,13 @@ function getLocs() {
 }
 
 
+
+
+function createLoc(lat, lng ,name){
+
+    return {
+        name,
+        lat,
+        lng
+    }
+}
