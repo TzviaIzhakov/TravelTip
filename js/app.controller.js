@@ -10,6 +10,7 @@ window.onGetUserPos = onGetUserPos;
 window.onPanToLocation = onPanToLocation;
 window.onDeleteLocation = onDeleteLocation;
 window.saveLoc = saveLoc;
+window.onMoveToLoc = onMoveToLoc;
 
 const LOC_KEY = 'locDB';
 
@@ -50,7 +51,7 @@ function onAddMarker() {
 
 function onGetLocs() {
   locService.getLocs().then((locs) => {
-    // console.log('Locations:', locs);
+    console.log('Locations:', locs);
     // document.querySelector('.locs').innerText = JSON.stringify(locs, null, 2);
     return renderLocations(locs);
   });
