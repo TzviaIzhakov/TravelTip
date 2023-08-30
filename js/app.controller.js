@@ -1,5 +1,6 @@
 import { locService } from './services/loc.service.js';
 import { mapService } from './services/map.service.js';
+import { storageService } from './services/async-storage.service.js';
 
 window.onload = onInit;
 window.onAddMarker = onAddMarker;
@@ -8,11 +9,28 @@ window.onGetLocs = onGetLocs;
 window.onGetUserPos = onGetUserPos;
 window.saveLoc = saveLoc;
 
+const LOC_KEY = 'locDB';
+
 function onInit() {
   mapService
     .initMap()
     .then(() => {
       console.log('Map is ready');
+      console.log(mapService.getMap());
+      mapService.getMap().addListener('click', (ev) => {
+        const lat = ev.latLng.lat();
+        const lng = ev.latLng.lng();
+        mapService.panTo(lat, lng);
+        axios
+          .get(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCcepevgXQ0DFmsXrdyecMV11LMtvFSoWs`
+          )
+          .then((res) => res.data.results[0].formatted_address)
+          .then((adress) => {
+            saveLoc(lat, lng, adress);
+            storageService.post(LOC_KEY, { lat, lng, adress });
+          });
+      });
     })
     .catch(() => console.log('Error: cannot init map'));
 }
@@ -71,10 +89,10 @@ function renderLocations(locs) {
   console.log(locs);
   const strHtml = locs
     .map((loc) => {
-      let { name, lat, lng } = loc;
+      let { adress, lat, lng } = loc;
       return `
     <tr>
-    <td>${name}</td>
+    <td>${adress}</td>
     <td>${lat}</td>
     <td>${lng}</td>
     </tr>
@@ -82,7 +100,7 @@ function renderLocations(locs) {
     })
     .join('');
   console.log(strHtml);
-  const elTbody = document.querySelector('tbody');
+  const elTbody = document.querySelector('.locations');
   console.log(elTbody);
   console.log(document.querySelector('table'));
   elTbody.innerHTML = strHtml;
