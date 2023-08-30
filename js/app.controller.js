@@ -11,6 +11,7 @@ window.onPanToLocation = onPanToLocation;
 window.onDeleteLocation = onDeleteLocation;
 window.saveLoc = saveLoc;
 window.onMoveToLoc = onMoveToLoc;
+window.onGetLink = onGetLink;
 
 const LOC_KEY = 'locDB';
 
@@ -23,8 +24,22 @@ function onInit() {
       mapService.getMap().addListener('click', (ev) => {
         const lat = ev.latLng.lat();
         const lng = ev.latLng.lng();
+
         mapService.panTo(lat, lng);
         onAddMarker(lat, lng);
+
+        const queryParams = `?lat=${lat}&lng=${lng}`;
+        const newUrl =
+          window.location.protocol +
+          '//' +
+          window.location.host +
+          window.location.pathname +
+          queryParams;
+
+        console.log(newUrl);
+        window.history.pushState({ path: newUrl }, '', newUrl);
+        console.log(window.location.href, '!');
+
         axios
           .get(
             `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCcepevgXQ0DFmsXrdyecMV11LMtvFSoWs`
@@ -36,6 +51,26 @@ function onInit() {
       });
     })
     .catch(() => console.log('Error: cannot init map'));
+}
+
+function onGetLink() {
+  const queryParams = new URLSearchParams(window.location.search);
+  const myParam1 = queryParams.get('lat');
+  const myParam2 = queryParams.get('lng');
+  // console.log(myParam);
+  console.log(queryParams);
+  const newUrl =
+    window.location.protocol +
+    '//' +
+    'tzviaizhakov.github.io/TravelTip/' +
+    window.location.pathname +
+    '?' +
+    'lat=' +
+    myParam1 +
+    '&lng=' +
+    myParam2;
+  navigator.clipboard.writeText(newUrl);
+  console.log(newUrl);
 }
 
 // This function provides a Promise API to the callback-based-api of getCurrentPosition

@@ -24,6 +24,13 @@ function initMap(lat = 32.0749831, lng = 34.9120554) {
     // }
     // panTo(loc.lat,loc.lng )
     // console.log(loc,'loc')
+    const queryParamsNew = new URLSearchParams(window.location.search);
+    const myParam1 = queryParamsNew.get('lat');
+    const myParam2 = queryParamsNew.get('lng');
+    console.log(myParam1, myParam2, 'ppppp');
+    if (myParam1 && myParam2) {
+      mapService.panTo(myParam1, myParam2);
+    }
   });
 }
 
