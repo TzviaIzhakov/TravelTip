@@ -10,17 +10,16 @@ const locs = storageService.query(LOC_KEY) || [];
 
 function deleteLocation(id) {
   getLocs().then((locs) => {
-    // locs.splice(i, 1);
     console.log(id);
     storageService.remove(LOC_KEY, id);
+    console.log(locs, 'in delete!!');
     return locs;
   });
 }
 
 function addLoc(lat, lng, adress) {
   getLocs().then((locs) => {
-    locs.push(createLoc(lat, lng, adress));
-    storageService.post(LOC_KEY, { lat, lng, adress });
+    storageService.post(LOC_KEY, createLoc(lat, lng, adress));
     return locs;
   });
 }

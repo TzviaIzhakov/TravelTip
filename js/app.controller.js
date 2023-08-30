@@ -98,7 +98,7 @@ function saveLoc(lat, lng, adress) {
 
 function renderLocations(locs) {
   const strHtml = locs
-    .map((loc, i) => {
+    .map((loc) => {
       let { adress, lat, lng } = loc;
       return `
     <tr>
