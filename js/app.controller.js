@@ -19,6 +19,7 @@ function onInit() {
     .initMap()
     .then(() => {
       console.log('Map is ready');
+      console.log(mapService.getMap());
       mapService.getMap().addListener('click', (ev) => {
         const lat = ev.latLng.lat();
         const lng = ev.latLng.lng();
@@ -83,9 +84,9 @@ function onGetUserPos() {
       console.log('err!!!', err);
     });
 }
-function onPanTo() {
+function onPanTo(lat = 35.6895, lng = 139.6917) {
   console.log('Panning the Map');
-  mapService.panTo(35.6895, 139.6917);
+  mapService.panTo(lat, lng);
 }
 
 function saveLoc(lat, lng, adress) {
@@ -114,19 +115,18 @@ function renderLocations(locs) {
     `;
     })
     .join('');
-  console.log(strHtml);
+  //   console.log(strHtml);
   const elTbody = document.querySelector('.locations');
   elTbody.innerHTML = strHtml;
 }
 
-function onPanToLocation(lat, lng) {
-  mapService.panTo(lat, lng);
+function onDeleteLocation(id) {
+  locService.deleteLocation(id).then((res) => {
+    console.log('res', res);
+    renderLocations(res);
+  });
 }
 
-function onDeleteLocation(id) {
-  locService.deleteLocation(id);
-  locService.getLocs().then((locs) => {
-    console.log(locs, 'locs in delete');
-    return renderLocations(locs);
-  });
+function onPanToLocation(lat, lng) {
+  mapService.panTo(lat, lng);
 }
