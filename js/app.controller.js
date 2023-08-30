@@ -50,8 +50,9 @@ function onAddMarker() {
 
 function onGetLocs() {
   locService.getLocs().then((locs) => {
-    console.log('Locations:', locs);
-    document.querySelector('.locs').innerText = JSON.stringify(locs, null, 2);
+    // console.log('Locations:', locs);
+    // document.querySelector('.locs').innerText = JSON.stringify(locs, null, 2);
+    return renderLocations(locs);
   });
 }
 
